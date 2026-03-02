@@ -4,6 +4,7 @@ import com.appointment.booking.appointment_booking_system.DTO.CreateProviderRequ
 import com.appointment.booking.appointment_booking_system.DTO.UpdateProviderRequest;
 import com.appointment.booking.appointment_booking_system.Entity.Provider;
 import com.appointment.booking.appointment_booking_system.Service.ProviderService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class ProviderController
     public ResponseEntity<Provider> addProvider(@RequestBody CreateProviderRequest createProviderRequest)
     {
         Provider provider = providerService.addProvider(createProviderRequest);
-        return ResponseEntity.ok(provider);
+        return ResponseEntity.status(HttpStatus.CREATED).body(provider);
     }
 
     @GetMapping("/")

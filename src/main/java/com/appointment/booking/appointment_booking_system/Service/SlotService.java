@@ -1,0 +1,60 @@
+package com.appointment.booking.appointment_booking_system.Service;
+
+
+import com.appointment.booking.appointment_booking_system.DTO.CreateSlotRequest;
+import com.appointment.booking.appointment_booking_system.Entity.Provider;
+import com.appointment.booking.appointment_booking_system.Entity.Slot;
+import com.appointment.booking.appointment_booking_system.Enum.SlotStatus;
+import com.appointment.booking.appointment_booking_system.Exception.ResourceNotFoundException;
+import com.appointment.booking.appointment_booking_system.Repository.ProviderRepository;
+import com.appointment.booking.appointment_booking_system.Repository.SlotRepository;
+import org.jspecify.annotations.Nullable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+
+@Service
+public class SlotService
+{
+    private final SlotRepository slotRepository;
+    private final ProviderRepository providerRepository;
+
+    public SlotService(SlotRepository slotRepository, ProviderRepository providerRepository)
+    {
+        this.slotRepository = slotRepository;
+        this.providerRepository = providerRepository;
+    }
+
+    @Transactional
+    public Slot createSlotsForProvider(UUID providerId, CreateSlotRequest createSlotRequest)
+    {
+        //check if provider exists
+        Provider provider = providerRepository.findById(providerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Provider not found with id: " + providerId));
+
+        //check the start time is before end time
+        if(createSlotRequest.startTime().isAfter(createSlotRequest.endTime()))
+        {
+            throw new IllegalArgumentException("Start time must be after end time");
+        }
+
+        //check capacity is positive
+        if(createSlotRequest.capacity() <= 0)
+        {
+            throw new IllegalArgumentException("Capacity must be a positive number");
+        }
+
+        Slot slot = Slot.builder()
+                .date(createSlotRequest.date())
+                .startTime(createSlotRequest.startTime())
+                .endTime(createSlotRequest.endTime())
+                .capacity(createSlotRequest.capacity())
+                .availableCapacity(createSlotRequest.capacity())
+                .slotStatus(SlotStatus.OPEN)
+                .provider(provider)
+                .build();
+
+        return slotRepository.save(slot);
+    }
+}
