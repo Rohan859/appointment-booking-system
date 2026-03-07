@@ -12,6 +12,7 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -56,5 +57,20 @@ public class SlotService
                 .build();
 
         return slotRepository.save(slot);
+    }
+
+    public List<Slot> getSlotsByProviderId(UUID providerId)
+    {
+        //check if provider exists
+        Provider provider = providerRepository.findById(providerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Provider not found with id: " + providerId));
+
+        return slotRepository.findByProviderId(providerId);
+    }
+
+    public Slot getSlotById(UUID slotId)
+    {
+        return slotRepository.findById(slotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Slot not found with id: " + slotId));
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -28,5 +29,17 @@ public class SlotController
         // Logic to create slots for a provider
         Slot slot = slotService.createSlotsForProvider(providerId, createSlotRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(slot);
+    }
+
+    @GetMapping("providers/{providerId}/slots")
+    public ResponseEntity<List<Slot>> getSlotsByProviderId(@PathVariable UUID providerId)
+    {
+        return ResponseEntity.ok(slotService.getSlotsByProviderId(providerId));
+    }
+
+    @GetMapping("/slots/{slotId}")
+    public ResponseEntity<Slot> getSlotById(@PathVariable UUID slotId)
+    {
+        return ResponseEntity.ok(slotService.getSlotById(slotId));
     }
 }
