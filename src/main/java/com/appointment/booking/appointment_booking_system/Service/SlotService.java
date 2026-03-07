@@ -2,12 +2,14 @@ package com.appointment.booking.appointment_booking_system.Service;
 
 
 import com.appointment.booking.appointment_booking_system.DTO.CreateSlotRequest;
+import com.appointment.booking.appointment_booking_system.DTO.UpdateSlotStatusRequest;
 import com.appointment.booking.appointment_booking_system.Entity.Provider;
 import com.appointment.booking.appointment_booking_system.Entity.Slot;
 import com.appointment.booking.appointment_booking_system.Enum.SlotStatus;
 import com.appointment.booking.appointment_booking_system.Exception.ResourceNotFoundException;
 import com.appointment.booking.appointment_booking_system.Repository.ProviderRepository;
 import com.appointment.booking.appointment_booking_system.Repository.SlotRepository;
+import jakarta.validation.Valid;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,5 +74,22 @@ public class SlotService
     {
         return slotRepository.findById(slotId)
                 .orElseThrow(() -> new ResourceNotFoundException("Slot not found with id: " + slotId));
+    }
+
+    @Transactional
+    public String updateSlotStatus(UUID slotId, @Valid UpdateSlotStatusRequest request)
+    {
+        Slot slot = getSlotById(slotId);
+        slot.setSlotStatus(request.slotStatus());
+        slotRepository.save(slot);
+        return "Slot status updated successfully to " + request.slotStatus() + " for slot id: " + slotId;
+    }
+
+    @Transactional
+    public String deleteSlot(UUID slotId)
+    {
+        Slot slot = getSlotById(slotId);
+        slotRepository.delete(slot);
+        return "Slot with id: " + slotId + " deleted successfully.";
     }
 }
