@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface SlotRepository extends JpaRepository<Slot, UUID>
 {
     List<Slot>findByProviderId(UUID providerId);
+
+    Slot findFirstByProviderId(UUID providerId);
 }
